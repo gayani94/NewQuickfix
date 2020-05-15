@@ -2,9 +2,10 @@ package com.abc.quickfixj;
 
 import quickfix.*;
 import quickfix.field.*;
+import quickfix.fix42.ExecutionReport;
 
+public class TradeAppAcceptor extends MessageCracker implements Application{
 
-public class TradeAppAcceptor extends MessageCracker implements Application {
     @Override
     public void onCreate(SessionID sessionID) {
 
@@ -48,18 +49,23 @@ public class TradeAppAcceptor extends MessageCracker implements Application {
         System.out.println("###TransactioTime" + order.getTransactTime().toString());
 
         sendMessageToClient(order, sessionID);
-
-
     }
 
     public void sendMessageToClient(quickfix.fix42.NewOrderSingle order, SessionID sessionID) {
         try {
-            OrderQty orderQty = null;
+                        
+            OrderID orderObj = new OrderID("111101");
+            ExecID execObj = new ExecID("111");
+            ExecTransType execTransTypeObj = new ExecTransType(ExecTransType.NEW);
+            ExecType execTypeObj = new ExecType(ExecType.NEW);
+            OrdStatus ordStatusObj = new OrdStatus(OrdStatus.NEW);
+            LeavesQty leavesQtyObj = new LeavesQty(	10);
+            CumQty cumQtyObj = new CumQty(0);
+            AvgPx avgPxObj = new AvgPx(0);
 
-            orderQty = new OrderQty(56.0);
-            quickfix.fix40.ExecutionReport accept = new quickfix.fix40.ExecutionReport(new OrderID("133456"), new ExecID("789"),
-                    new ExecTransType(ExecTransType.NEW), new OrdStatus(OrdStatus.NEW), order.getSymbol(), order.getSide(),
-                    orderQty, new LastShares(0), new LastPx(0), new CumQty(0), new AvgPx(0));
+            ExecutionReport accept = new ExecutionReport(orderObj, execObj,execTransTypeObj, 
+            		execTypeObj, ordStatusObj , order.getSymbol(), order.getSide(),
+            		leavesQtyObj, cumQtyObj, avgPxObj);
             accept.set(order.getClOrdID());
             System.out.println("###Sending Order Acceptance:" + accept.toString() + "sessionID:" + sessionID.toString());
             Session.sendToTarget(accept, sessionID);
@@ -71,4 +77,8 @@ public class TradeAppAcceptor extends MessageCracker implements Application {
             sessionNotFound.printStackTrace();
         }
     }
+
+
 }
+
+
