@@ -42,6 +42,10 @@ public class Fix_wui implements EntryPoint {
     
     private Button                       btnSend;
     
+    private Button          	         sessionConnectBtn;
+
+    private Button          	         sessionDiscntConnectBtn;
+    
     /**
      * This is the entry point method.
      */
@@ -64,6 +68,14 @@ public class Fix_wui implements EntryPoint {
 	msgTypeList = new ListBox();
 	mainPanel.add(msgTypeList, 10, 42);
 	msgTypeList.setSize("258px", "18px");
+	
+	sessionConnectBtn = new Button("Connect");
+	mainPanel.add(sessionConnectBtn, 300, 9);
+	sessionConnectBtn.setSize("70px", "30px");
+	
+	sessionDiscntConnectBtn = new Button("Disconnect");
+	mainPanel.add(sessionDiscntConnectBtn, 400, 9);
+	sessionDiscntConnectBtn.setSize("80px", "30px");
 	
 	fixGatewayService.getSessionList(new AsyncCallback<ArrayList<String>>() {
 	    

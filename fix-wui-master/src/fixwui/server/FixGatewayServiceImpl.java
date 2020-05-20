@@ -26,8 +26,11 @@ import fixwui.client.FixGatewayService;
 public class FixGatewayServiceImpl extends RemoteServiceServlet implements
 FixGatewayService {
     
-    private static EngineFactory _engineFact;
-    private Engine _engine;
+//    private static EngineFactory _engineFact;
+//    private Engine _engine;
+	
+    private static fixwui.server.EngineFactory _engineFact;
+    private fixwui.server.Engine _engine;
     
     @Override
     public void init(final ServletConfig config) throws ServletException {
@@ -35,13 +38,13 @@ FixGatewayService {
 	
 	try {
 	    
-	    Class<?> classobj = Class.forName("simplefix.quickfix.EngineFactory");
+	    Class<?> classobj = Class.forName("fixwui.server.EngineFactory");
 	    Object engineobj = classobj.newInstance();
 	    
 	    if ( engineobj instanceof EngineFactory ) {
 		
-		_engineFact = (EngineFactory) engineobj;
-		_engine = _engineFact.createEngine();
+		_engineFact = (fixwui.server.EngineFactory) engineobj;
+		_engine = (fixwui.server.Engine) _engineFact.createEngine();
 		_engine.initEngine("banzai.cfg");
 		
 		Application application = new _Application();
