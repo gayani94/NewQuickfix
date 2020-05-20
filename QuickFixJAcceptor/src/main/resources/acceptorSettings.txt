@@ -17,3 +17,21 @@ SocketAcceptPort=9878
 UseDataDictionary=Y
 DataDictionary=./FIX42.xml
 FileStorePath=./Server_Seq_Store
+
+ConnectionType=acceptor
+ResetOnLogon=Y
+FileLogPath=./Server_Logs
+ReconnectInterval=6030
+[SESSION] #A single session
+BeginString=FIX.4.2
+SenderCompID=EXEC423
+TargetCompID=BANZAI423
+StartDay=sunday
+EndDay=saturday
+StartTime=00:00:00
+EndTime=00:00:00
+CheckLatency=N
+SocketAcceptPort=9879
+UseDataDictionary=Y
+DataDictionary=./FIX42.xml
+FileStorePath=./Server_Seq_Store
