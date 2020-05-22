@@ -26,11 +26,8 @@ import fixwui.client.FixGatewayService;
 public class FixGatewayServiceImpl extends RemoteServiceServlet implements
 FixGatewayService {
     
-//    private static EngineFactory _engineFact;
-//    private Engine _engine;
-	
-    private static fixwui.server.EngineFactory _engineFact;
-    private fixwui.server.Engine _engine;
+    private static EngineFactory _engineFact;
+    private Engine _engine;
     
     @Override
     public void init(final ServletConfig config) throws ServletException {
@@ -38,13 +35,13 @@ FixGatewayService {
 	
 	try {
 	    
-	    Class<?> classobj = Class.forName("fixwui.server.EngineFactory");
+	    Class<?> classobj = Class.forName("simplefix.quickfix.EngineFactory");
 	    Object engineobj = classobj.newInstance();
 	    
 	    if ( engineobj instanceof EngineFactory ) {
 		
-		_engineFact = (fixwui.server.EngineFactory) engineobj;
-		_engine = (fixwui.server.Engine) _engineFact.createEngine();
+		_engineFact = (EngineFactory) engineobj;
+		_engine = _engineFact.createEngine();
 		_engine.initEngine("banzai.cfg");
 		
 		Application application = new _Application();
@@ -84,7 +81,20 @@ FixGatewayService {
 	
 	@Override
 	public void onLogon(final Session sessionId) {
-        Message ordMsg = _engineFact.createMessage(MsgType.ORDER_SINGLE);
+	    
+	}
+	
+	@Override
+	public void onLogout(final Session arg0) {
+	    // TODO Auto-generated method stub
+	    
+	}
+    }
+
+	@Override
+	public Void sendMessage(final String sessionId) throws IllegalArgumentException {
+		
+		Message ordMsg = _engineFact.createMessage(MsgType.ORDER_SINGLE);
 
         ordMsg.setValue(Tag.ClOrdID, "Cld-1234");
         ordMsg.setValue(Tag.Symbol, "6758");
@@ -96,15 +106,18 @@ FixGatewayService {
         
         ordMsg.setValue(Tag.TransactTime,"20200508-04:36:42");
         
-        sessionId.sendAppMessage(ordMsg);
-	    
-	}
-	
-	@Override
-	public void onLogout(final Session arg0) {
-	    // TODO Auto-generated method stub
-	    
-	}
-    };
+        for ( Session session : _engine.getAllSessions() ) {
+        	String sessionString = session.getSenderCompID() + "<-->" + session.getTargetCompID();
+        	    	       	    
+    	    if(sessionString.equals(sessionId) ) {
+    	    	
+    	    	session.sendAppMessage(ordMsg);
+    	    	
+    	    	
+    	    }
+    	    
+    	}
+		return null;
+	};
     
 }

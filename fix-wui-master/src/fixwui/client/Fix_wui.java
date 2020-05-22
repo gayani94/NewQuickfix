@@ -6,6 +6,8 @@ import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -69,7 +71,28 @@ public class Fix_wui implements EntryPoint {
 	mainPanel.add(msgTypeList, 10, 42);
 	msgTypeList.setSize("258px", "18px");
 	
-	sessionConnectBtn = new Button("Connect");
+	sessionConnectBtn = new Button("Connect", new ClickHandler() {
+		@Override
+		public void onClick(ClickEvent event) {
+			// TODO Auto-generated method stub
+			
+			fixGatewayService.sendMessage(sessionList.getSelectedValue(), new AsyncCallback<Void>() {
+				
+				@Override
+				public void onSuccess(Void result) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			
+		}
+	    });
 	mainPanel.add(sessionConnectBtn, 300, 9);
 	sessionConnectBtn.setSize("70px", "30px");
 	
