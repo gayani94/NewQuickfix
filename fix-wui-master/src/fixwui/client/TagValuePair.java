@@ -5,7 +5,16 @@ public class TagValuePair {
     private int    tagNum;
     private String tagValue;
     
-    public String getTagName() {
+    
+    
+    public TagValuePair(String tagName, int tagNum, String tagValue) {
+		super();
+		this.tagName = tagName;
+		this.tagNum = tagNum;
+		this.tagValue = tagValue;
+	}
+
+	public String getTagName() {
 	return tagName;
     }
     

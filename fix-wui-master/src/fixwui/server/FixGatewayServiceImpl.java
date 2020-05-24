@@ -14,6 +14,7 @@ import simplefix.MsgType;
 import simplefix.Session;
 import simplefix.Tag;
 
+import java.util.HashMap;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import fixwui.client.FixGatewayService;
@@ -28,6 +29,7 @@ FixGatewayService {
     
     private static EngineFactory _engineFact;
     private Engine _engine;
+    Application application = new _Application();
     
     @Override
     public void init(final ServletConfig config) throws ServletException {
@@ -44,7 +46,7 @@ FixGatewayService {
 		_engine = _engineFact.createEngine();
 		_engine.initEngine("banzai.cfg");
 		
-		Application application = new _Application();
+		
 		
 		_engine.startInProcess(application);
 		
@@ -80,44 +82,72 @@ FixGatewayService {
 	}
 	
 	@Override
-	public void onLogon(final Session sessionId) {
-	    
+	public void onLogon(final Session session) {
+		
+		System.out.println("LoggedOn==>" + session.getSenderCompID() + "<-->" + session.getTargetCompID());
 	}
 	
 	@Override
-	public void onLogout(final Session arg0) {
+	public void onLogout(final Session session) {
 	    // TODO Auto-generated method stub
-	    
+		System.out.println("logout==>" + session.getSenderCompID() + "<-->" + session.getTargetCompID());
 	}
     }
 
 	@Override
-	public Void sendMessage(final String sessionId) throws IllegalArgumentException {
+	public Void sendMessage(final HashMap<String,String> orderDetailsmap) throws IllegalArgumentException {
+		
+		Boolean sessionConnectStatus = false;
+		
+		System.out.println(orderDetailsmap.get("SessionId"));
+		System.out.println(orderDetailsmap.get("ClOrdID"));
+		System.out.println(orderDetailsmap.get("Symbol"));
+		System.out.println(orderDetailsmap.get("Side"));
+		System.out.println(orderDetailsmap.get("OrderQty"));
+		System.out.println(orderDetailsmap.get("Price"));
+		System.out.println(orderDetailsmap.get("OrdType"));
+		System.out.println(orderDetailsmap.get("HandlInst"));
+		System.out.println("SessionLoggedStatus==>"+orderDetailsmap.get("SessionLoggedStatus"));
+		
 		
 		Message ordMsg = _engineFact.createMessage(MsgType.ORDER_SINGLE);
 
-        ordMsg.setValue(Tag.ClOrdID, "Cld-1234");
-        ordMsg.setValue(Tag.Symbol, "6758");
-        ordMsg.setValue(Tag.Side, "1");
-        ordMsg.setValue(Tag.OrderQty, "1000");
-        ordMsg.setValue(Tag.Price, "123.45");
-        ordMsg.setValue(Tag.OrdType, "2");
-        ordMsg.setValue(Tag.HandlInst, "3");
-        
+        ordMsg.setValue(Tag.ClOrdID, orderDetailsmap.get("ClOrdID"));
+        ordMsg.setValue(Tag.Symbol, orderDetailsmap.get("Symbol"));
+        ordMsg.setValue(Tag.Side, orderDetailsmap.get("Side"));
+        ordMsg.setValue(Tag.OrderQty, orderDetailsmap.get("OrderQty"));
+        ordMsg.setValue(Tag.Price, orderDetailsmap.get("Price"));
+        ordMsg.setValue(Tag.OrdType, orderDetailsmap.get("OrdType"));
+        ordMsg.setValue(Tag.HandlInst, orderDetailsmap.get("HandlInst"));
+
+       
         ordMsg.setValue(Tag.TransactTime,"20200508-04:36:42");
         
+        if(orderDetailsmap.get("SessionLoggedStatus").toString().equals("loggedTrue")) {
+        	
+        	sessionConnectStatus = true;
+        }
+        
+        String sessionId = orderDetailsmap.get("SessionId");
         for ( Session session : _engine.getAllSessions() ) {
         	String sessionString = session.getSenderCompID() + "<-->" + session.getTargetCompID();
         	    	       	    
     	    if(sessionString.equals(sessionId) ) {
     	    	
-    	    	session.sendAppMessage(ordMsg);
     	    	
+    	    	if(sessionConnectStatus){
+    	    		application.onLogon(session);
+    	    		//quickfix.Session.lookupSession(session.getSenderCompID(),session.getTargetCompID()).logon();
+    	    	} else {
+    	    		application.onLogout(session);
+    	    		//quickfix.Session.lookupSession(session.getSenderCompID(),session.getTargetCompID()).logout();
+				}
+    	    	session.sendAppMessage(ordMsg);
+    
     	    	
     	    }
     	    
     	}
 		return null;
-	};
-    
+	}
 }

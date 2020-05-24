@@ -2,6 +2,7 @@ package fixwui.client;
 
 import java.util.ArrayList;
 
+import java.util.HashMap;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -15,5 +16,5 @@ public interface FixGatewayService extends RemoteService {
     
     ArrayList<String> getSessionList() throws IllegalArgumentException;
     
-    Void sendMessage(String session) throws IllegalArgumentException;
+    Void sendMessage(HashMap<String,String> hash) throws IllegalArgumentException;
 }
